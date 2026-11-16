@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundScope AI | Spotify Music Intelligence & Studio</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i class="fa-brands fa-spotify spotify-icon"></i>
+                <div class="logo-text">
+                    <h2>SoundScope <span>AI</span></h2>
+                    <p>Music Intelligence Studio</p>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="tab-predictor">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Popularity Predictor</span>
+                </button>
+                <button class="nav-item" data-tab="tab-recommender">
+                    <i class="fa-solid fa-compact-disc"></i>
+                    <span>Music Recommender</span>
+                </button>
+                <button class="nav-item" data-tab="tab-discovery">
+                    <i class="fa-solid fa-compass"></i>
+                    <span>Discovery Advisor</span>
+                </button>
+                <button class="nav-item" data-tab="tab-insights">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <span>Model Analytics</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span id="backend-status">Connecting API...</span>
+                </div>
+                <div class="api-links">
+                    <a href="/docs" target="_blank"><i class="fa-solid fa-code"></i> FastAPI Docs (Swagger)</a>
+                </div>
+                <p class="credits">Developed by <strong>Kashish</strong></p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            <!-- TAB 1: PREDICTOR & WHAT-IF -->
+            <section id="tab-predictor" class="tab-pane active">
+                <header class="section-header">
+                    <div>
+                        <h1>Track Popularity Predictor & What-If Studio</h1>
+                        <p>Simulate acoustic production properties and predict listener popularity using machine learning.</p>
+                    </div>
+                </header>
+
+                <div class="grid-2-col">
+                    <!-- Controls Column -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-sliders"></i> Production Sliders</h3>
+                            <button id="btn-reset-sliders" class="btn-subtle"><i class="fa-solid fa-rotate-left"></i> Default</button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pred-genre">Genre</label>
+                                <select id="pred-genre" class="custom-select"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pred-tempo">Tempo (BPM): <span id="val-tempo" class="val-badge">120</span></label>
+                                <input type="range" id="pred-tempo" min="50" max="220" value="120" step="1">
+                            </div>
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label>Danceability</label>
+                                <span id="val-danceability" class="val-badge">0.75</span>
+                            </div>
+                            <input type="range" id="pred-danceability" min="0" max="1" value="0.75" step="0.01">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label>Energy</label>
+                                <span id="val-energy" class="val-badge">0.80</span>
+                            </div>
+                            <input type="range" id="pred-energy" min="0" max="1" value="0.80" step="0.01">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label>Valence (Happiness)</label>
+                                <span id="val-valence" class="val-badge">0.65</span>
+                            </div>
+                            <input type="range" id="pred-valence" min="0" max="1" value="0.65" step="0.01">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label>Loudness (dB)</label>
+                                <span id="val-loudness" class="val-badge">-5.5</span>
+                            </div>
+                            <input type="range" id="pred-loudness" min="-30" max="0" value="-5.5" step="0.5">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label>Acousticness</label>
+                                <span id="val-acousticness" class="val-badge">0.15</span>
+                            </div>
+                            <input type="range" id="pred-acousticness" min="0" max="1" value="0.15" step="0.01">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label>Speechiness</label>
+                                <span id="val-speechiness" class="val-badge">0.06</span>
+                            </div>
+                            <input type="range" id="pred-speechiness" min="0" max="1" value="0.06" step="0.01">
+                        </div>
+
+                        <div class="form-row mt-2">
+                            <div class="form-group">
+                                <label for="pred-duration">Duration (min)</label>
+                                <input type="number" id="pred-duration" value="3.2" step="0.1" min="0.5" max="15" class="custom-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="pred-artist-count">Artist Catalog Presence</label>
+                                <input type="number" id="pred-artist-count" value="8" min="1" max="50" class="custom-input">
+                            </div>
+                        </div>
+
+                        <button id="btn-predict" class="btn-primary btn-block"><i class="fa-solid fa-bolt"></i> Run Popularity Inference</button>
+                    </div>
+
+                    <!-- Prediction Output Column -->
+                    <div class="prediction-results-area">
+                        <!-- Score Display Card -->
+                        <div class="card result-card">
+                            <div class="result-header">
+                                <span class="badge-status">Inference Output</span>
+                                <span id="res-mood" class="badge-mood">Energetic & Euphoric</span>
+                            </div>
+
+                            <div class="score-display">
+                                <div class="score-ring">
+                                    <h1 id="res-score">74.2</h1>
+                                    <span>/ 100</span>
+                                </div>
+                                <div class="score-meta">
+                                    <h3 id="res-rating">Viral / Hit Potential</h3>
+                                    <p id="res-confidence">Confidence Tier: <strong>High</strong></p>
+                                    <div class="progress-bar-bg">
+                                        <div id="res-progress" class="progress-bar-fill" style="width: 74%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- What-If Studio Card -->
+                        <div class="card glass-card mt-3">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-code-compare"></i> "What-If" Scenario Studio</h3>
+                            </div>
+                            <p class="text-muted">Simulate what happens if you tweak a single audio parameter:</p>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>What if I modify:</label>
+                                    <select id="whatif-feature" class="custom-select">
+                                        <option value="energy">Energy</option>
+                                        <option value="danceability">Danceability</option>
+                                        <option value="acousticness">Acousticness</option>
+                                        <option value="loudness">Loudness</option>
+                                        <option value="tempo">Tempo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>To new value: <span id="val-whatif" class="val-badge">0.95</span></label>
+                                    <input type="range" id="whatif-slider" min="0" max="1" value="0.95" step="0.01">
+                                </div>
+                            </div>
+
+                            <div id="whatif-result-box" class="whatif-box">
+                                <div class="whatif-metric">
+                                    <span>Simulated Score:</span>
+                                    <strong id="whatif-new-score">76.8 / 100</strong>
+                                </div>
+                                <div class="whatif-delta">
+                                    <span id="whatif-delta-badge" class="badge-delta positive">+2.6 pts</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: RECOMMENDER -->
+            <section id="tab-recommender" class="tab-pane">
+                <header class="section-header">
+                    <div>
+                        <h1>Scalable Music Recommender Engine</h1>
+                        <p>Powered by a 9-dimensional acoustic <code>NearestNeighbors</code> index with Cosine Similarity.</p>
+                    </div>
+                </header>
+
+                <div class="card search-card">
+                    <div class="search-input-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="rec-query" placeholder="Search track name (e.g., Comedy, Bad Habits, Shape of You, Hold On)..." value="Comedy">
+                        <button id="btn-run-rec" class="btn-primary"><i class="fa-solid fa-sparkles"></i> Find Similar</button>
+                    </div>
+                    <div id="search-suggestions" class="suggestions-container"></div>
+                </div>
+
+                <div id="rec-results-container" class="mt-4">
+                    <h3 class="section-title">Similar Tracks</h3>
+                    <div id="rec-cards-list" class="tracks-grid"></div>
+                </div>
+            </section>
+
+            <!-- TAB 3: DISCOVERY ADVISOR -->
+            <section id="tab-discovery" class="tab-pane">
+                <header class="section-header">
+                    <div>
+                        <h1>Intelligent Discovery Advisor</h1>
+                        <p>Find matching songs by vibe, genre, and activity tempo constraint.</p>
+                    </div>
+                </header>
+
+                <div class="card glass-card">
+                    <div class="grid-3-col">
+                        <div class="form-group">
+                            <label for="disc-genre">Genre Filter</label>
+                            <select id="disc-genre" class="custom-select">
+                                <option value="Any">Any Genre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="disc-mood">Mood Cluster</label>
+                            <select id="disc-mood" class="custom-select">
+                                <option value="Any">Any Mood</option>
+                                <option value="Energetic & Euphoric">Energetic & Euphoric</option>
+                                <option value="Chill & Acoustic">Chill & Acoustic</option>
+                                <option value="Intense & Heavy">Intense & Heavy</option>
+                                <option value="Mellow & Reflective">Mellow & Reflective</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="disc-tempo">Target Workout/Study BPM</label>
+                            <input type="number" id="disc-tempo" value="120" min="0" max="220" class="custom-input">
+                        </div>
+                    </div>
+
+                    <div class="grid-2-col mt-2">
+                        <div class="form-group">
+                            <label>Minimum Danceability: <span id="val-disc-dance">0.60</span></label>
+                            <input type="range" id="disc-dance" min="0" max="1" value="0.60" step="0.05">
+                        </div>
+                        <div class="form-group">
+                            <label>Minimum Energy: <span id="val-disc-energy">0.50</span></label>
+                            <input type="range" id="disc-energy" min="0" max="1" value="0.50" step="0.05">
+                        </div>
+                    </div>
+
+                    <button id="btn-run-disc" class="btn-primary mt-3"><i class="fa-solid fa-compass"></i> Discover Tracks</button>
+                </div>
+
+                <div id="disc-results-container" class="mt-4">
+                    <h3 class="section-title">Discovery Results</h3>
+                    <div id="disc-table-area" class="table-responsive"></div>
+                </div>
+            </section>
+
+            <!-- TAB 4: MODEL INSIGHTS -->
+            <section id="tab-insights" class="tab-pane">
+                <header class="section-header">
+                    <div>
+                        <h1>Model Architecture & Benchmark Insights</h1>
+                        <p>Scientific validation, evaluation metrics, and feature importance explainability.</p>
+                    </div>
+                </header>
+
+                <div class="grid-2-col">
+                    <div class="card glass-card">
+                        <h3><i class="fa-solid fa-award"></i> Cross-Validation & Test Benchmarks</h3>
+                        <div class="table-responsive mt-3">
+                            <table class="benchmark-table">
+                                <thead>
+                                    <tr>
+                                        <th>Model</th>
+                                        <th>MAE</th>
+                                        <th>RMSE</th>
+                                        <th>R² Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Baseline (Dummy Mean)</td>
+                                        <td>17.12</td>
+                                        <td>20.45</td>
+                                        <td>-0.0001</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ridge Regression (L2)</td>
+                                        <td>12.02</td>
+                                        <td>16.84</td>
+                                        <td>0.3220</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Decision Tree Regressor</td>
+                                        <td>12.85</td>
+                                        <td>17.65</td>
+                                        <td>0.2580</td>
+                                    </tr>
+                                    <tr class="highlight-row">
+                                        <td><strong>HistGradientBoosting (Tuned)</strong></td>
+                                        <td><strong>11.36</strong></td>
+                                        <td><strong>15.74</strong></td>
+                                        <td><strong>0.4082</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="insight-box mt-3">
+                            <h4><i class="fa-solid fa-lightbulb"></i> The ~0.41 R² Ceiling Insight</h4>
+                            <p>In music streaming analytics, acoustic properties naturally explain ~41% of popularity variance. Commercial mega-hits depend heavily on exogenous variables: playlist curators, TikTok virality, and artist brand equity.</p>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <h3><i class="fa-solid fa-chart-column"></i> Top Feature Drivers (Permutation Importance)</h3>
+                        <div class="chart-container mt-3">
+                            <canvas id="importanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
